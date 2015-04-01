@@ -31,16 +31,12 @@ An alternative to this script, is to create keybinds for the following:
 
 Enable
 ```
-nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { 
-ForceFullCompositionPipeline 
-= On }
+nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCompositionPipeline = On }
 ```
 
 Disable
 ```
-nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { 
-ForceFullCompositionPipeline 
-= Off }
+nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCompositionPipeline = Off }
 ```
 
 
