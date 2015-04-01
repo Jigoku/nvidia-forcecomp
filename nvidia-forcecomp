@@ -1,0 +1,73 @@
+#!/usr/bin/env perl
+#
+# A tray icon utility for toggling nvidia's composition pipeline
+# (eliminates tearing, notably in firefox when scrolling)
+# 
+# usage:  left-click = enable
+#	  right-click = disable
+# 	  middle-click = exit
+
+
+use strict;
+use warnings;
+use Gtk2 '-init';
+use Gtk2::TrayIcon;
+
+my $icon = Gtk2::Image->new_from_pixbuf(
+                Gtk2::Gdk::Pixbuf->new_from_file("/usr/share/pixmaps/nvidia-settings.png")->scale_simple(24,24, 'bilinear')
+);
+
+my $eventbox = Gtk2::EventBox->new;
+$eventbox->add( $icon );
+
+my $trayicon = Gtk2::TrayIcon->new( 'Info' );
+$trayicon->add( $eventbox );
+
+my $tooltip = Gtk2::Tooltips->new;
+
+$eventbox->signal_connect( 'button_press_event', \&click );
+
+
+$tooltip->set_tip( $trayicon, "(enabled)\nForceFullCompositionPipeline = On" );
+&enable_pipeline;
+
+
+$trayicon->show_all;
+
+
+Gtk2->main;
+
+
+sub click {
+	#left mouse button
+	if ( $_[ 1 ]->button == 1 ) {
+		$tooltip->set_tip( $trayicon, "(enabled)\nForceFullCompositionPipeline = On" );
+		&enable_pipeline;
+	}
+
+	#middle mouse button
+	elsif ( $_[ 1 ]->button == 2 ) {
+		exit_gtk();
+	}
+
+	#right mouse button
+	elsif ( $_[ 1 ]->button == 3 ) {
+		$tooltip->set_tip( $trayicon, "(disabled)\nForceFullCompositionPipeline = Off" );
+		&disable_pipeline;
+	}
+	return 1;
+}
+
+
+sub enable_pipeline { 
+		system('nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCompositionPipeline = On }" > /dev/null');
+}
+
+sub disable_pipeline { 
+		system('nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCompositionPipeline = Off }" > /dev/null');
+}
+
+sub exit_gtk {
+	Gtk2->main_quit;
+	return 0;
+}
